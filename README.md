@@ -52,6 +52,12 @@ Once the server is running, open your browser and navigate to:
 
 http://localhost:3000
 
+## Preview
+
+Here is an example of the payment slip upload UI:
+
+![Payment Slip Upload UI](public/screenshot.png)
+
 ## Editing the Project
 You can start editing the project by modifying the following files:
 
