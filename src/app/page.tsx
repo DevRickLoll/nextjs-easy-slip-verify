@@ -1,6 +1,6 @@
 "use client";
 import { App, Button, Row, Tabs, Upload, UploadFile, message, Spin, Typography, Card, Tag, Tooltip, Divider, Col } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FirstImageUpload, ImagePreview } from "./utils/imageUploadComponent";
 import { UploadChangeParam } from "antd/es/upload";
 import { CloudUploadOutlined, FileImageOutlined, CodeOutlined, CheckCircleFilled, CopyOutlined, CalendarOutlined, ArrowRightOutlined } from "@ant-design/icons";
@@ -51,8 +51,8 @@ export default function Home() {
             <Image
               src="/logo.jpg"
               alt="Logo"
-              width={150}
-              height={150}
+              width={50}
+              height={50}
               className="mx-auto"
               style={{ objectFit: "contain" }}
               onError={() => {
@@ -62,7 +62,7 @@ export default function Home() {
             />
             <div className="flex justify-center w-full">
               <Title
-                level={2}
+                level={5}
                 className="text-center text-xl sm:text-2xl md:text-3xl mb-0"
                 style={{
                   marginBottom: "0 !important",
@@ -77,7 +77,7 @@ export default function Home() {
               </Title>
             </div>
 
-            <div className="p-3 sm:p-6 border-b border-gray-200">
+            <div className="p-3 border-b border-gray-200">
               <Row justify="center">
                 <Col>
                   <Title level={3} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl">
@@ -237,6 +237,26 @@ const Base64ImageUpload: React.FC<{}> = () => {
       reader.onerror = (error) => reject(error);
     });
 
+  const [base64String, setBase64String] = useState<string>("");
+
+  // Update base64String when image changes
+  useEffect(() => {
+    const updateBase64 = async () => {
+      if (slip.length > 0 && slip[0].originFileObj) {
+        try {
+          const base64 = await getBase64(slip[0].originFileObj as File);
+          setBase64String(base64);
+        } catch (error) {
+          console.error("Error converting to base64:", error);
+        }
+      } else {
+        setBase64String("");
+      }
+    };
+
+    updateBase64();
+  }, [slip]);
+
   const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
     const { file } = info;
 
@@ -313,7 +333,6 @@ const Base64ImageUpload: React.FC<{}> = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
         <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
-
         <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center">
           {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
@@ -321,6 +340,10 @@ const Base64ImageUpload: React.FC<{}> = () => {
 
           {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={1} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
         </div>
+        <Text type="secondary" className="text-xs block mb-1 mt-4">
+          Base64 String
+        </Text>
+        {slip.length > 0 && <textarea value={base64String} readOnly className="w-full min-h-32 md:min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />}
 
         <Button
           onClick={verifyEasySlip}
