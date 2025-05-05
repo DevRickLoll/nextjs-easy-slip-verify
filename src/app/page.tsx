@@ -70,6 +70,8 @@ const ImageUploadComponent = () => {
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [slip, setslip] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+  const { message } = App.useApp();
 
   const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
     const { file } = info;
@@ -134,6 +136,13 @@ const ImageUploadComponent = () => {
     }
   };
 
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
@@ -165,8 +174,16 @@ const ImageUploadComponent = () => {
         <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
         {responseMessage ? (
           <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
-            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs md:text-sm font-bold">ข้อมูลจาก API:</h3>
+              <Tooltip title={copied === "payload" ? "คัดลอกแล้ว!" : "คัดลอก"}>
+                <CopyOutlined className={`flex-shrink-0 text-xs cursor-pointer ${copied === "payload" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(responseMessage, "payload")} />
+              </Tooltip>
+            </div>
+            {/* <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre> */}
+            <div className="flex items-center justify-between mb-2">
+              <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all w-full">{responseMessage}</pre>
+            </div>
           </div>
         ) : (
           <div className="h-48 md:h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
@@ -180,6 +197,8 @@ const Base64ImageUpload: React.FC<{}> = () => {
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [slip, setslip] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+  const { message } = App.useApp();
 
   const getBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -254,6 +273,13 @@ const Base64ImageUpload: React.FC<{}> = () => {
     }
   };
 
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
@@ -285,7 +311,12 @@ const Base64ImageUpload: React.FC<{}> = () => {
         <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
         {responseMessage ? (
           <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
-            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs md:text-sm font-bold">ข้อมูลจาก API:</h3>
+              <Tooltip title={copied === "payload" ? "คัดลอกแล้ว!" : "คัดลอก"}>
+                <CopyOutlined className={`flex-shrink-0 text-xs cursor-pointer ${copied === "payload" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(responseMessage, "payload")} />
+              </Tooltip>
+            </div>
             <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
           </div>
         ) : (
@@ -300,6 +331,8 @@ const PayloadUploadComponent = () => {
   const [payload, setPayload] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const { message } = App.useApp();
 
   const handleSubmit = async () => {
     if (!payload) {
@@ -337,6 +370,13 @@ const PayloadUploadComponent = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    });
   };
 
   return (
@@ -378,7 +418,12 @@ const PayloadUploadComponent = () => {
         {/* Raw API Response */}
         {responseMessage ? (
           <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
-            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs md:text-sm font-bold">ข้อมูลจาก API:</h3>
+              <Tooltip title={copied === "payload" ? "คัดลอกแล้ว!" : "คัดลอก"}>
+                <CopyOutlined className={`flex-shrink-0 text-xs cursor-pointer ${copied === "payload" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(responseMessage, "payload")} />
+              </Tooltip>
+            </div>
             <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
           </div>
         ) : (
