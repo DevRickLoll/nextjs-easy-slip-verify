@@ -60,14 +60,27 @@ export default function Home() {
                 // Error handling will need to use a different approach
               }}
             />
-            <Title level={2} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl mb-0" style={{ marginBottom: "0 !important" }}>
-              EASYSLIP
-            </Title>
+            <div className="flex justify-center w-full">
+              <Title
+                level={2}
+                className="text-center text-xl sm:text-2xl md:text-3xl mb-0"
+                style={{
+                  marginBottom: "0 !important",
+                  background: "linear-gradient(to right, #5fbffc, #ba38fc)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  display: "inline-block",
+                }}
+              >
+                EASYSLIP
+              </Title>
+            </div>
 
             <div className="p-3 sm:p-6 border-b border-gray-200">
               <Row justify="center">
                 <Col>
-                  <Title level={2} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl">
+                  <Title level={3} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl">
                     ระบบตรวจสอบสลิปการโอนเงิน
                   </Title>
                   <Text className="block text-center text-gray-500 text-sm sm:text-base">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</Text>
