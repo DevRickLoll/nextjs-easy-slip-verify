@@ -102,7 +102,7 @@ const ImageUploadComponent = () => {
       const response = await fetch("https://developer.easyslip.com/api/v1/verify", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN || "3414f1cb-ef5c-4354-af6f-d459fb71dce8"}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN}`,
         },
         body: formData,
       });
@@ -141,7 +141,7 @@ const ImageUploadComponent = () => {
 
         <Button
           onClick={verifyEasySlip}
-          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
+          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
                      disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
           disabled={slip.length === 0 || isLoading}
           type="primary"
@@ -224,7 +224,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN || "3414f1cb-ef5c-4354-af6f-d459fb71dce8"}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN}`,
         },
         body: JSON.stringify({
           image: base64String,
@@ -265,7 +265,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
 
         <Button
           onClick={verifyEasySlip}
-          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
+          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
                    disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
           disabled={slip.length === 0 || isLoading}
           type="primary"
@@ -292,6 +292,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
   );
 };
 
+
 const PayloadUploadComponent = () => {
   const [payload, setPayload] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -307,72 +308,84 @@ const PayloadUploadComponent = () => {
     setResponseMessage(null);
 
     try {
-      // This is a placeholder for your actual payload API endpoint
-      const response = await fetch("https://developer.easyslip.com/api/v1/verify-payload", {
-        method: "POST",
+      const encodedPayload = encodeURIComponent(payload);
+
+      const response = await fetch(`https://developer.easyslip.com/api/v1/verify?payload=${encodedPayload}`, {
+        method: "GET",
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN || "3414f1cb-ef5c-4354-af6f-d459fb71dce8"}`,
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN}`,
         },
-        body: JSON.stringify({ payload }),
       });
 
       const data = await response.json();
       setResponseMessage(JSON.stringify(data, null, 2));
 
-      if (data.status !== 200) {
-        message.error(`เกิดข้อผิดพลาด: ${data.message || "ไม่ทราบสาเหตุ"}`);
-      } else {
+      if (data.status === 200) {
         message.success("ตรวจสอบ Payload สำเร็จ!");
+      } else {
+        message.error(`เกิดข้อผิดพลาด: ${data.message || "ไม่ทราบสาเหตุ"}`);
       }
+
+      return data;
     } catch (error) {
+      console.error("Error calling EasySlip API:", error);
       message.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับ API");
-      console.error(error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ส่ง Payload</h2>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Payload JSON</label>
-          <textarea value={payload} onChange={(e) => setPayload(e.target.value)} className="w-full min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder='{"key": "value"}' />
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
-                   disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Spin size="small" className="mr-2" /> กำลังส่ง...
-            </>
-          ) : (
-            <>
-              <CloudUploadOutlined className="mr-2" /> ส่งข้อมูล
-            </>
-          )}
-        </button>
-      </div>
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* ซ้าย: กรอก Payload + ปุ่ม */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">ส่ง Payload</h2>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
-        {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto">
-            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Payload (QR Code)</label>
+            <textarea
+                value={payload}
+                onChange={(e) => setPayload(e.target.value)}
+                className="w-full min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder='ใส่ payload ที่อ่านได้จาก QR Code'
+            />
           </div>
-        ) : (
-          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
-        )}
+
+          <Button
+              onClick={handleSubmit}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
+						disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
+              disabled={isLoading}
+              type="primary"
+              size="large"
+              icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
+          >
+            {isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบ Payload"}
+          </Button>
+        </div>
+
+        {/* ขวา: แสดง TransactionDetails + raw API response */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+
+          {/* TransactionDetails (ถ้ามีข้อมูล) */}
+          <TransactionDetails transaction={JSON.parse(responseMessage || "{}")} />
+
+          {/* Raw API Response */}
+          {responseMessage ? (
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
+                <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+                <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+              </div>
+          ) : (
+              <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+          )}
+        </div>
       </div>
-    </div>
   );
 };
+
 
 interface BankInfo {
   id: string;
