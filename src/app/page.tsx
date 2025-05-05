@@ -772,11 +772,8 @@ const TransactionDetails: React.FC<{ transaction: TransactionData }> = ({ transa
                       <Text className="text-sm font-medium">{data.receiver.bank.name}</Text>
                     </>
                   ) : (
-                    <>
-                      <Text type="secondary" className="text-xs block">
-                        ไปยังบัญชีพร้อมเพย์
-                      </Text>
-                    </>
+                    // NATID, BILLERID
+                    <></>
                   )}
                 </div>
 
