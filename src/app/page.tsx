@@ -99,13 +99,20 @@ const ImageUploadComponent = () => {
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [slip, setslip] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const { message } = App.useApp();
 
   const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
     const { file } = info;
 
+    // Set uploading state based on file status
+    if (file.status === "uploading") {
+      setIsUploading(true);
+    }
+
     if (file.status === "done") {
+      setIsUploading(false);
       setslip((prevFileList) => {
         const newFile = {
           ...file,
@@ -118,6 +125,12 @@ const ImageUploadComponent = () => {
           return [...prevFileList.slice(0, 2), newFile];
         }
       });
+    }
+
+    // Also handle error case
+    if (file.status === "error") {
+      setIsUploading(false);
+      message.error(`${file.name} upload failed.`);
     }
   };
 
@@ -177,7 +190,16 @@ const ImageUploadComponent = () => {
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
         <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
 
-        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center">
+        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center relative">
+          {/* Show loading spinner when uploading */}
+          {isUploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-70 z-10">
+              <Spin>
+                <div className="mt-3">กำลังอัปโหลด...</div>
+              </Spin>
+            </div>
+          )}
+
           {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
@@ -189,7 +211,7 @@ const ImageUploadComponent = () => {
           onClick={verifyEasySlip}
           className="mt-4 w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700
                      disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
-          disabled={slip.length === 0 || isLoading}
+          disabled={slip.length === 0 || isLoading || isUploading}
           type="primary"
           size="large"
           icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
@@ -209,7 +231,6 @@ const ImageUploadComponent = () => {
                 <CopyOutlined className={`flex-shrink-0 text-xs cursor-pointer ${copied === "payload" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(responseMessage, "payload")} />
               </Tooltip>
             </div>
-            {/* <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre> */}
             <div className="flex items-center justify-between mb-2">
               <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all w-full">{responseMessage}</pre>
             </div>
@@ -226,6 +247,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const [slip, setslip] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const { message } = App.useApp();
 
@@ -260,7 +282,13 @@ const Base64ImageUpload: React.FC<{}> = () => {
   const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
     const { file } = info;
 
+    // Set uploading state based on file status
+    if (file.status === "uploading") {
+      setIsUploading(true);
+    }
+
     if (file.status === "done") {
+      setIsUploading(false);
       setslip((prevFileList) => {
         const newFile = {
           ...file,
@@ -273,6 +301,12 @@ const Base64ImageUpload: React.FC<{}> = () => {
           return [...prevFileList.slice(0, 2), newFile];
         }
       });
+    }
+
+    // Also handle error case
+    if (file.status === "error") {
+      setIsUploading(false);
+      message.error(`${file.name} upload failed.`);
     }
   };
 
@@ -333,7 +367,17 @@ const Base64ImageUpload: React.FC<{}> = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
         <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
-        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center">
+
+        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center relative">
+          {/* Show loading spinner when uploading */}
+          {isUploading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-50 bg-opacity-70 z-10">
+              <Spin>
+                <div className="mt-3">กำลังอัปโหลด...</div>
+              </Spin>
+            </div>
+          )}
+
           {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
