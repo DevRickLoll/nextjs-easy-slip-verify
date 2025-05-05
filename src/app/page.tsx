@@ -48,8 +48,14 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
           <div className="p-6 border-b border-gray-200">
-            <h1 className="text-3xl font-bold text-center text-gray-800">ระบบตรวจสอบสลิปการโอนเงิน</h1>
-            <p className="text-center text-gray-500 mt-2">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</p>
+            <Row justify="center">
+              <Col>
+                <Title level={2} className="text-center text-gray-800">
+                  ระบบตรวจสอบสลิปการโอนเงิน
+                </Title>
+                <Text className="block text-center text-gray-500">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</Text>
+              </Col>
+            </Row>
           </div>
           <Tabs activeKey={activeTab} onChange={setActiveTab} items={items} className="p-4" type="card" />
         </div>
