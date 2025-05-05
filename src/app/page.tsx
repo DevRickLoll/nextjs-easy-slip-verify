@@ -1,9 +1,11 @@
 "use client";
-import { App, Button, Row, Tabs, Upload, UploadFile, message, Spin } from "antd";
+import { App, Button, Row, Tabs, Upload, UploadFile, message, Spin, Typography, Card, Tag, Tooltip, Divider, Col } from "antd";
 import { useState } from "react";
 import { FirstImageUpload, ImagePreview } from "./utils/imageUploadComponent";
 import { UploadChangeParam } from "antd/es/upload";
-import { CloudUploadOutlined, FileImageOutlined, CodeOutlined } from "@ant-design/icons";
+import { CloudUploadOutlined, FileImageOutlined, CodeOutlined, CheckCircleFilled, CopyOutlined, CalendarOutlined, ArrowRightOutlined } from "@ant-design/icons";
+import Image from "next/image";
+const { Title, Text } = Typography;
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("image");
@@ -14,7 +16,7 @@ export default function Home() {
       label: (
         <span className="flex items-center">
           <FileImageOutlined className="mr-2" />
-          รูปภาพสลิป
+          Image
         </span>
       ),
       children: <ImageUploadComponent />,
@@ -57,116 +59,15 @@ export default function Home() {
 }
 
 const ImageUploadComponent = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!file) {
-      message.error("กรุณาเลือกไฟล์ก่อน!");
-      return;
-    }
-
-    setIsLoading(true);
-    setResponseMessage(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("https://developer.easyslip.com/api/v1/verify", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN}`,
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-      setResponseMessage(JSON.stringify(data, null, 2));
-
-      if (data.status !== 200) {
-        message.error(`เกิดข้อผิดพลาด: ${data.message || "ไม่ทราบสาเหตุ"}`);
-      } else {
-        message.success("ยืนยันการอัปโหลดสำเร็จ!");
-      }
-    } catch (error: any) {
-      message.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับ API");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">อัปโหลดไฟล์สลิป</h2>
-        <div className="mb-4">
-          <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-2">
-            เลือกไฟล์สลิป
-          </label>
-          <input
-            type="file"
-            id="file"
-            className="mt-1 block w-full text-sm text-gray-500 
-                    file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 
-                    file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 
-                    hover:file:bg-blue-100 transition-all duration-200"
-            onChange={handleFileChange}
-            accept="image/*"
-          />
-          {file && <div className="mt-2 text-sm text-gray-600">ไฟล์ที่เลือก: {file.name}</div>}
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
-                   disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <Spin size="small" className="mr-2" /> กำลังอัปโหลด...
-            </>
-          ) : (
-            <>
-              <CloudUploadOutlined className="mr-2" /> อัปโหลด
-            </>
-          )}
-        </button>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
-        {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto">
-            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
-          </div>
-        ) : (
-          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const Base64ImageUpload: React.FC<{}> = () => {
-  const [responseMessage, setResponseMessage] = useState<string | null>(null);
-  const [bookbank, setBookbank] = useState<UploadFile[]>([]);
+  const [slip, setslip] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleBookbankChange = (info: UploadChangeParam<UploadFile>) => {
+  const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
     const { file } = info;
 
     if (file.status === "done") {
-      setBookbank((prevFileList) => {
+      setslip((prevFileList) => {
         const newFile = {
           ...file,
           url: URL.createObjectURL(file.originFileObj as Blob),
@@ -182,11 +83,12 @@ const Base64ImageUpload: React.FC<{}> = () => {
   };
 
   const handleRemoveImage = (index: number) => {
-    setBookbank((prevFileList) => prevFileList.filter((_, i) => i !== index));
+    setslip((prevFileList) => prevFileList.filter((_, i) => i !== index));
+    setResponseMessage(null);
   };
 
   const verifyEasySlip = async () => {
-    if (bookbank.length === 0) {
+    if (slip.length === 0) {
       message.error("กรุณาเลือกไฟล์สลิปก่อน!");
       return;
     }
@@ -194,7 +96,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("file", bookbank[0].originFileObj as Blob);
+    formData.append("file", slip[0].originFileObj as Blob);
 
     try {
       const response = await fetch("https://developer.easyslip.com/api/v1/verify", {
@@ -230,18 +132,18 @@ const Base64ImageUpload: React.FC<{}> = () => {
         <h2 className="text-xl font-semibold mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
 
         <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 min-h-64 flex flex-col items-center justify-center">
-          {bookbank.map((file, index) => (
+          {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
 
-          {bookbank.length === 0 && <FirstImageUpload onChange={handleBookbankChange} fileLimit={2} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
+          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={2} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
         </div>
 
         <Button
           onClick={verifyEasySlip}
           className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
-                   disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
-          disabled={bookbank.length === 0 || isLoading}
+                     disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
+          disabled={slip.length === 0 || isLoading}
           type="primary"
           size="large"
           icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
@@ -252,8 +154,133 @@ const Base64ImageUpload: React.FC<{}> = () => {
 
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+        <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
         {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
+            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          </div>
+        ) : (
+          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Base64ImageUpload: React.FC<{}> = () => {
+  const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const [slip, setslip] = useState<UploadFile[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      console.log("ggg", reader);
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handleslipChange = (info: UploadChangeParam<UploadFile>) => {
+    const { file } = info;
+
+    if (file.status === "done") {
+      setslip((prevFileList) => {
+        const newFile = {
+          ...file,
+          url: URL.createObjectURL(file.originFileObj as Blob),
+        };
+
+        if (prevFileList.length < 3) {
+          return [...prevFileList, newFile];
+        } else {
+          return [...prevFileList.slice(0, 2), newFile];
+        }
+      });
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setslip((prevFileList) => prevFileList.filter((_, i) => i !== index));
+    setResponseMessage(null);
+  };
+
+  const verifyEasySlip = async () => {
+    if (slip.length === 0) {
+      message.error("กรุณาเลือกไฟล์สลิปก่อน!");
+      return;
+    }
+
+    setIsLoading(true);
+
+    // const formData = new FormData();
+    // formData.append("file", slip[0].originFileObj as Blob);
+
+    const base64String = await getBase64(slip[0].originFileObj as File);
+
+    try {
+      const response = await fetch("https://developer.easyslip.com/api/v1/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_EASYSLIP_API_TOKEN || "3414f1cb-ef5c-4354-af6f-d459fb71dce8"}`,
+        },
+        body: JSON.stringify({
+          image: base64String,
+        }),
+      });
+
+      const data = await response.json();
+      setResponseMessage(JSON.stringify(data, null, 2));
+
+      if (data.status === 200) {
+        message.success("ตรวจสอบสลิปสำเร็จ!");
+      } else {
+        message.error(`เกิดข้อผิดพลาด: ${data.message || "ไม่ทราบสาเหตุ"}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error calling EasySlip API:", error);
+      message.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับ API");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
+
+        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 min-h-64 flex flex-col items-center justify-center">
+          {slip.map((file, index) => (
+            <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
+          ))}
+
+          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={2} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
+        </div>
+
+        <Button
+          onClick={verifyEasySlip}
+          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 
+                   disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
+          disabled={slip.length === 0 || isLoading}
+          type="primary"
+          size="large"
+          icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
+        >
+          {isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสลิป"}
+        </Button>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+        <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
+        {responseMessage ? (
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
             <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
             <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
           </div>
@@ -344,5 +371,305 @@ const PayloadUploadComponent = () => {
         )}
       </div>
     </div>
+  );
+};
+
+interface BankInfo {
+  id: string;
+  name: string;
+  short: string;
+}
+
+interface NameInfo {
+  th: string;
+  en: string;
+}
+
+interface BankAccountInfo {
+  type: string;
+  account: string;
+}
+
+interface AccountInfo {
+  name: NameInfo;
+  bank: BankAccountInfo;
+}
+
+interface PartyInfo {
+  bank: BankInfo;
+  account: AccountInfo;
+}
+
+interface AmountInfo {
+  amount: number;
+  local: {
+    amount: number;
+    currency: string;
+  };
+}
+
+interface TransactionData {
+  status: number;
+  data: {
+    payload: string;
+    transRef: string;
+    date: string;
+    countryCode: string;
+    amount: AmountInfo;
+    fee: number;
+    ref1: string;
+    ref2: string;
+    ref3: string;
+    sender: PartyInfo;
+    receiver: PartyInfo;
+  };
+}
+
+const TransactionDetails: React.FC<{ transaction: TransactionData }> = ({ transaction }) => {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  // Handle cases where transaction might be null or invalid
+  if (!transaction || !transaction.data) {
+    return (
+      <Card className="w-full shadow-sm border border-gray-100">
+        <div className="text-center text-gray-500">ไม่พบข้อมูลธุรกรรม</div>
+      </Card>
+    );
+  }
+
+  const { data } = transaction;
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat("th-TH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).format(date);
+    } catch (error) {
+      return dateString;
+    }
+  };
+
+  const formatAccount = (account: string) => {
+    // Keep masked account format
+    return account;
+  };
+
+  const copyToClipboard = (text: string, field: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(field);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
+
+  return (
+    <Card
+      className="w-full shadow-md border border-gray-100 rounded-xl overflow-hidden"
+      headStyle={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}
+      title={
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <CheckCircleFilled className="text-green-500 text-xl mr-2" />
+            <span className="font-bold text-lg">รายละเอียดธุรกรรม</span>
+          </div>
+          <Tag color="green" className="px-3 py-1 text-sm font-medium rounded-full">
+            สำเร็จ
+          </Tag>
+        </div>
+      }
+    >
+      <div className="space-y-6">
+        {/* Transaction ID & Date */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Text type="secondary" className="text-xs block mb-1">
+              หมายเลขธุรกรรม
+            </Text>
+            <div className="flex items-center">
+              <Text className="font-medium">{data.transRef}</Text>
+              <Tooltip title={copied === "transRef" ? "คัดลอกแล้ว!" : "คัดลอก"}>
+                <CopyOutlined className={`ml-2 text-xs cursor-pointer ${copied === "transRef" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(data.transRef, "transRef")} />
+              </Tooltip>
+            </div>
+          </div>
+          <div>
+            <Text type="secondary" className="text-xs block mb-1">
+              <CalendarOutlined className="mr-1" />
+              วันเวลาที่ทำรายการ
+            </Text>
+            <Text className="font-medium">{formatDate(data.date)}</Text>
+          </div>
+        </div>
+
+        <Divider className="my-4" />
+
+        {/* Amount */}
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <Text type="secondary" className="text-xs block mb-1">
+            จำนวนเงิน
+          </Text>
+          <div className="flex justify-center">
+            <Title level={2} className="m-0 text-blue-700">
+              {data.amount.amount.toLocaleString("th-TH", { minimumFractionDigits: 2 })} บาท
+            </Title>
+          </div>
+          {data.fee > 0 && (
+            <div className="text-center mt-1">
+              <Text type="secondary" className="text-xs">
+                ค่าธรรมเนียม: {data.fee.toLocaleString("th-TH", { minimumFractionDigits: 2 })} บาท
+              </Text>
+            </div>
+          )}
+        </div>
+
+        {/* Transaction Flow */}
+        <div className="relative">
+          <Row gutter={[16, 16]} className="flex items-stretch">
+            {/* Sender */}
+            <Col xs={24} sm={11}>
+              <Card className="h-full bg-gray-50 border border-gray-200">
+                <div className="flex items-center mb-3">
+                  {data.sender.bank.id && (
+                    <Image
+                      src={`/bank/${data.sender.bank.id}.png`}
+                      alt={data.sender.bank.short}
+                      width={32}
+                      height={32}
+                      onError={() => {
+                        // Using Image from next/image doesn't support onError directly
+                        // Error handling will need to use a different approach
+                      }}
+                      style={{ objectFit: "contain" }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <Text type="secondary" className="text-xs block">
+                    จากบัญชี
+                  </Text>
+                  <Text className="text-sm font-medium">{data.sender.bank.name}</Text>
+                </div>
+
+                <div className="pl-2 mt-3">
+                  <Text type="secondary" className="text-xs block mb-1">
+                    ชื่อบัญชี
+                  </Text>
+                  <Text className="font-medium block mb-2">{data.sender.account.name.th}</Text>
+                  <Text type="secondary" className="text-xs block mb-1">
+                    เลขที่บัญชี
+                  </Text>
+                  <Text className="font-medium">{formatAccount(data.sender.account.bank.account)}</Text>
+                </div>
+              </Card>
+            </Col>
+
+            {/* Arrow */}
+            <Col xs={24} sm={2} className="flex items-center justify-center">
+              <div className="hidden sm:flex h-full items-center justify-center">
+                <ArrowRightOutlined className="text-2xl text-blue-500" />
+              </div>
+              <div className="sm:hidden py-2">
+                <div className="w-full flex justify-center">
+                  <div className="transform rotate-90">
+                    <ArrowRightOutlined className="text-2xl text-blue-500" />
+                  </div>
+                </div>
+              </div>
+            </Col>
+
+            {/* Receiver */}
+            <Col xs={24} sm={11}>
+              <Card className="h-full bg-gray-50 border border-gray-200">
+                <div className="flex items-center mb-3">
+                  {data.receiver.bank.id && (
+                    <Image
+                      src={`/bank/${data.receiver.bank.id}.png`}
+                      alt={data.receiver.bank.short}
+                      width={32}
+                      height={32}
+                      onError={() => {
+                        // Using Image from next/image doesn't support onError directly
+                        // Error handling will need to use a different approach
+                      }}
+                      style={{ objectFit: "contain" }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <Text type="secondary" className="text-xs block">
+                    ไปยังบัญชี
+                  </Text>
+                  <Text className="text-sm font-medium">{data.receiver.bank.name}</Text>
+                </div>
+
+                <div className="pl-2 mt-3">
+                  <Text type="secondary" className="text-xs block mb-1">
+                    ชื่อบัญชี
+                  </Text>
+                  <Text className="font-medium block mb-2">{data.receiver.account.name.th}</Text>
+                  <Text type="secondary" className="text-xs block mb-1">
+                    เลขที่บัญชี
+                  </Text>
+                  <Text className="font-medium">{formatAccount(data.receiver.account.bank.account)}</Text>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+
+        {/* References if available */}
+        {(data.ref1 || data.ref2 || data.ref3) && (
+          <>
+            <Divider className="my-4" />
+            <div className="grid grid-cols-3 gap-4">
+              {data.ref1 && (
+                <div>
+                  <Text type="secondary" className="text-xs block mb-1">
+                    Ref 1
+                  </Text>
+                  <Text className="font-medium">{data.ref1}</Text>
+                </div>
+              )}
+              {data.ref2 && (
+                <div>
+                  <Text type="secondary" className="text-xs block mb-1">
+                    Ref 2
+                  </Text>
+                  <Text className="font-medium">{data.ref2}</Text>
+                </div>
+              )}
+              {data.ref3 && (
+                <div>
+                  <Text type="secondary" className="text-xs block mb-1">
+                    Ref 3
+                  </Text>
+                  <Text className="font-medium">{data.ref3}</Text>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Payload */}
+        <Divider className="my-4" />
+        <div>
+          <Text type="secondary" className="text-xs block mb-1">
+            Payload
+          </Text>
+          <div className="bg-gray-50 p-3 rounded border border-gray-200 font-mono text-xs break-all">
+            {data.payload}
+            <Tooltip title={copied === "payload" ? "คัดลอกแล้ว!" : "คัดลอก"}>
+              <CopyOutlined className={`ml-2 text-xs cursor-pointer ${copied === "payload" ? "text-green-500" : "text-gray-400"}`} onClick={() => copyToClipboard(data.payload, "payload")} />
+            </Tooltip>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 };
