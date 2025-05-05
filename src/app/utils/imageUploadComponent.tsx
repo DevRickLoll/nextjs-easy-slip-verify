@@ -31,21 +31,11 @@ export const FirstImageUpload: React.FC<{
       style={{ width: size.width, height: size.height }}
     >
       <p className="ant-upload-drag-icon">{!text ? <InboxOutlined /> : <UploadOutlined />}</p>
-      {fileLimit === 1 ? (
-        <p className="ant-upload-text" style={{ fontSize: "12px" }}>
-          {text || "คลิกหรือลากไฟล์มาที่นี่เพื่ออัพโหลด"}
-        </p>
-      ) : (
-        <p className="ant-upload-text">{text || "คลิกหรือลากไฟล์มาที่นี่เพื่ออัพโหลด"}</p>
-      )}
-      {fileLimit === 1 ? (
-        <></>
-      ) : (
-        <>
-          <p className="ant-upload-hint">รองรับไฟล์ประเภท JPG, PNG ขนาดไม่เกิน 2 MB</p>
-          <p className="ant-upload-hint">จำนวนไม่เกิน {fileLimit} ภาพ</p>
-        </>
-      )}
+      <p className="ant-upload-text">{text || "คลิกหรือลากไฟล์มาที่นี่เพื่ออัพโหลด"}</p>
+      <>
+        <p className="ant-upload-hint">รองรับไฟล์ประเภท JPG, PNG ขนาดไม่เกิน 5 MB</p>
+        <p className="ant-upload-hint">จำนวนไม่เกิน 1 ภาพ</p>
+      </>
     </Dragger>
   );
 };

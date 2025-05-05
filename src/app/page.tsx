@@ -46,7 +46,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
           <div className="p-6 border-b border-gray-200">
             <h1 className="text-3xl font-bold text-center text-gray-800">ระบบตรวจสอบสลิปการโอนเงิน</h1>
             <p className="text-center text-gray-500 mt-2">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</p>
@@ -136,7 +136,7 @@ const ImageUploadComponent = () => {
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
 
-          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={2} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
+          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={1} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
         </div>
 
         <Button
@@ -260,7 +260,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
 
-          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={2} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
+          {slip.length === 0 && <FirstImageUpload onChange={handleslipChange} fileLimit={1} size={{ width: "100%", height: "240px" }} text="คลิกเพื่ออัพโหลดรูปสลิป" />}
         </div>
 
         <Button
@@ -291,7 +291,6 @@ const Base64ImageUpload: React.FC<{}> = () => {
     </div>
   );
 };
-
 
 const PayloadUploadComponent = () => {
   const [payload, setPayload] = useState("");
@@ -337,55 +336,54 @@ const PayloadUploadComponent = () => {
   };
 
   return (
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* ซ้าย: กรอก Payload + ปุ่ม */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">ส่ง Payload</h2>
+    <div className="grid md:grid-cols-2 gap-6">
+      {/* ซ้าย: กรอก Payload + ปุ่ม */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">ส่ง Payload</h2>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Payload (QR Code)</label>
-            <textarea
-                value={payload}
-                onChange={(e) => setPayload(e.target.value)}
-                className="w-full min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder='ใส่ payload ที่อ่านได้จาก QR Code'
-            />
-          </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Payload (QR Code)</label>
+          <textarea
+            value={payload}
+            onChange={(e) => setPayload(e.target.value)}
+            className="w-full min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="ใส่ payload ที่อ่านได้จาก QR Code"
+          />
+        </div>
 
-          <Button
-              onClick={handleSubmit}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
+        <Button
+          onClick={handleSubmit}
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
 						disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
-              disabled={isLoading}
-              type="primary"
-              size="large"
-              icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
-          >
-            {isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบ Payload"}
-          </Button>
-        </div>
-
-        {/* ขวา: แสดง TransactionDetails + raw API response */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
-
-          {/* TransactionDetails (ถ้ามีข้อมูล) */}
-          <TransactionDetails transaction={JSON.parse(responseMessage || "{}")} />
-
-          {/* Raw API Response */}
-          {responseMessage ? (
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
-                <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-                <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
-              </div>
-          ) : (
-              <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
-          )}
-        </div>
+          disabled={isLoading}
+          type="primary"
+          size="large"
+          icon={isLoading ? <Spin size="small" /> : <CloudUploadOutlined />}
+        >
+          {isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบ Payload"}
+        </Button>
       </div>
+
+      {/* ขวา: แสดง TransactionDetails + raw API response */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+
+        {/* TransactionDetails (ถ้ามีข้อมูล) */}
+        <TransactionDetails transaction={JSON.parse(responseMessage || "{}")} />
+
+        {/* Raw API Response */}
+        {responseMessage ? (
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
+            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          </div>
+        ) : (
+          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+        )}
+      </div>
+    </div>
   );
 };
-
 
 interface BankInfo {
   id: string;
