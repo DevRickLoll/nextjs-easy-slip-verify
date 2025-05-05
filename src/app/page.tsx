@@ -48,6 +48,22 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-4 md:p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden p-2 sm:p-4">
+            <Image
+              src="/logo.jpg"
+              alt="Logo"
+              width={150}
+              height={150}
+              className="mx-auto"
+              style={{ objectFit: "contain" }}
+              onError={() => {
+                // Using Image from next/image doesn't support onError directly
+                // Error handling will need to use a different approach
+              }}
+            />
+            <Title level={2} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl mb-0" style={{ marginBottom: "0 !important" }}>
+              EASYSLIP
+            </Title>
+
             <div className="p-3 sm:p-6 border-b border-gray-200">
               <Row justify="center">
                 <Col>
