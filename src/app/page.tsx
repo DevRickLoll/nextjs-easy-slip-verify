@@ -546,9 +546,15 @@ interface BankAccountInfo {
   account: string;
 }
 
+interface ProxyInfo {
+  type: string;
+  account: string;
+}
+
 interface AccountInfo {
   name: NameInfo;
   bank: BankAccountInfo;
+  proxy?: ProxyInfo;
 }
 
 interface PartyInfo {
@@ -743,7 +749,7 @@ const TransactionDetails: React.FC<{ transaction: TransactionData }> = ({ transa
             <Col xs={24} sm={11}>
               <Card className="h-full bg-gray-50 border border-gray-200">
                 <div className="flex items-center mb-3">
-                  {data.receiver.bank.id && (
+                  {data.receiver.bank.id && data.receiver.bank.id !== "" && (
                     <Image
                       src={`/bank/${data.receiver.bank.id}.png`}
                       alt={data.receiver.bank.short}
@@ -758,21 +764,31 @@ const TransactionDetails: React.FC<{ transaction: TransactionData }> = ({ transa
                   )}
                 </div>
                 <div>
-                  <Text type="secondary" className="text-xs block">
-                    ไปยังบัญชี
-                  </Text>
-                  <Text className="text-sm font-medium">{data.receiver.bank.name}</Text>
+                  {data.receiver?.bank?.name ? (
+                    <>
+                      <Text type="secondary" className="text-xs block">
+                        ไปยังบัญชี
+                      </Text>
+                      <Text className="text-sm font-medium">{data.receiver.bank.name}</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text type="secondary" className="text-xs block">
+                        ไปยังบัญชีพร้อมเพย์
+                      </Text>
+                    </>
+                  )}
                 </div>
 
                 <div className="pl-2 mt-3">
                   <Text type="secondary" className="text-xs block mb-1">
                     ชื่อบัญชี
                   </Text>
-                  <Text className="font-medium block mb-2">{data.receiver.account.name.th}</Text>
+                  <Text className="font-medium block mb-2">{data.receiver?.account?.name?.th}</Text>
                   <Text type="secondary" className="text-xs block mb-1">
                     เลขที่บัญชี
                   </Text>
-                  <Text className="font-medium">{formatAccount(data.receiver.account.bank.account)}</Text>
+                  <Text className="font-medium">{formatAccount(data.receiver?.account?.bank?.account || (data.receiver?.account?.proxy ? data.receiver.account.proxy.account : ""))}</Text>
                 </div>
               </Card>
             </Col>
