@@ -16,7 +16,7 @@ export default function Home() {
       label: (
         <span className="flex items-center">
           <FileImageOutlined className="mr-2" />
-          Image
+          <span className="hidden sm:inline">Image</span>
         </span>
       ),
       children: <ImageUploadComponent />,
@@ -26,7 +26,7 @@ export default function Home() {
       label: (
         <span className="flex items-center">
           <CodeOutlined className="mr-2" />
-          Base64
+          <span className="hidden sm:inline">Base64</span>
         </span>
       ),
       children: <Base64ImageUpload />,
@@ -36,7 +36,7 @@ export default function Home() {
       label: (
         <span className="flex items-center">
           <CloudUploadOutlined className="mr-2" />
-          Payload
+          <span className="hidden sm:inline">Payload</span>
         </span>
       ),
       children: <PayloadUploadComponent />,
@@ -44,23 +44,25 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden p-4">
-          <div className="p-6 border-b border-gray-200">
-            <Row justify="center">
-              <Col>
-                <Title level={2} className="text-center text-gray-800">
-                  ระบบตรวจสอบสลิปการโอนเงิน
-                </Title>
-                <Text className="block text-center text-gray-500">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</Text>
-              </Col>
-            </Row>
+    <App>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-2 sm:p-4 md:p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden p-2 sm:p-4">
+            <div className="p-3 sm:p-6 border-b border-gray-200">
+              <Row justify="center">
+                <Col>
+                  <Title level={2} className="text-center text-gray-800 text-xl sm:text-2xl md:text-3xl">
+                    ระบบตรวจสอบสลิปการโอนเงิน
+                  </Title>
+                  <Text className="block text-center text-gray-500 text-sm sm:text-base">เลือกวิธีการอัปโหลดสลิปจากเมนูด้านล่าง</Text>
+                </Col>
+              </Row>
+            </div>
+            <Tabs activeKey={activeTab} onChange={setActiveTab} items={items} className="p-2 sm:p-4" type="card" size="middle" />
           </div>
-          <Tabs activeKey={activeTab} onChange={setActiveTab} items={items} className="p-4" type="card" />
         </div>
       </div>
-    </div>
+    </App>
   );
 }
 
@@ -133,11 +135,11 @@ const ImageUploadComponent = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
 
-        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 min-h-64 flex flex-col items-center justify-center">
+        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center">
           {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
@@ -147,7 +149,7 @@ const ImageUploadComponent = () => {
 
         <Button
           onClick={verifyEasySlip}
-          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
+          className="mt-4 w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700
                      disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
           disabled={slip.length === 0 || isLoading}
           type="primary"
@@ -158,16 +160,16 @@ const ImageUploadComponent = () => {
         </Button>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">ผลการตรวจสอบ</h2>
         <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
         {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
-            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
+            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
           </div>
         ) : (
-          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+          <div className="h-48 md:h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
         )}
       </div>
     </div>
@@ -182,7 +184,6 @@ const Base64ImageUpload: React.FC<{}> = () => {
   const getBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
-      console.log("ggg", reader);
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error);
@@ -220,9 +221,6 @@ const Base64ImageUpload: React.FC<{}> = () => {
 
     setIsLoading(true);
 
-    // const formData = new FormData();
-    // formData.append("file", slip[0].originFileObj as Blob);
-
     const base64String = await getBase64(slip[0].originFileObj as File);
 
     try {
@@ -257,11 +255,11 @@ const Base64ImageUpload: React.FC<{}> = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">อัปโหลดรูปสลิป</h2>
 
-        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-4 min-h-64 flex flex-col items-center justify-center">
+        <div className="bg-gray-50 rounded-lg border border-dashed border-gray-300 p-3 md:p-4 min-h-64 flex flex-col items-center justify-center">
           {slip.map((file, index) => (
             <ImagePreview key={file.uid} file={file} onRemove={() => handleRemoveImage(index)} isOriginalProductImage={!file.originFileObj} index={index} />
           ))}
@@ -271,7 +269,7 @@ const Base64ImageUpload: React.FC<{}> = () => {
 
         <Button
           onClick={verifyEasySlip}
-          className="mt-4 w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
+          className="mt-4 w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700
                    disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
           disabled={slip.length === 0 || isLoading}
           type="primary"
@@ -282,16 +280,16 @@ const Base64ImageUpload: React.FC<{}> = () => {
         </Button>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">ผลการตรวจสอบ</h2>
         <TransactionDetails transaction={JSON.parse(responseMessage || "{}") as TransactionData} />
         {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
-            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
+            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
           </div>
         ) : (
-          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+          <div className="h-48 md:h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
         )}
       </div>
     </div>
@@ -342,24 +340,24 @@ const PayloadUploadComponent = () => {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
       {/* ซ้าย: กรอก Payload + ปุ่ม */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ส่ง Payload</h2>
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">ส่ง Payload</h2>
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Payload (QR Code)</label>
           <textarea
             value={payload}
             onChange={(e) => setPayload(e.target.value)}
-            className="w-full min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full min-h-32 md:min-h-64 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="ใส่ payload ที่อ่านได้จาก QR Code"
           />
         </div>
 
         <Button
           onClick={handleSubmit}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700
+          className="w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700
 						disabled:bg-gray-300 transition-colors duration-200 flex items-center justify-center"
           disabled={isLoading}
           type="primary"
@@ -371,20 +369,20 @@ const PayloadUploadComponent = () => {
       </div>
 
       {/* ขวา: แสดง TransactionDetails + raw API response */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">ผลการตรวจสอบ</h2>
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-gray-700">ผลการตรวจสอบ</h2>
 
         {/* TransactionDetails (ถ้ามีข้อมูล) */}
         <TransactionDetails transaction={JSON.parse(responseMessage || "{}")} />
 
         {/* Raw API Response */}
         {responseMessage ? (
-          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-96 overflow-auto mt-4">
-            <h3 className="text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
-            <pre className="text-xs text-gray-600 whitespace-pre-wrap">{responseMessage}</pre>
+          <div className="p-3 md:p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-64 md:max-h-96 overflow-auto mt-4">
+            <h3 className="text-xs md:text-sm font-bold mb-2">ข้อมูลจาก API:</h3>
+            <pre className="text-xs text-gray-600 whitespace-pre-wrap break-all">{responseMessage}</pre>
           </div>
         ) : (
-          <div className="h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
+          <div className="h-48 md:h-64 flex items-center justify-center text-gray-400">รอผลการตรวจสอบ</div>
         )}
       </div>
     </div>
@@ -488,7 +486,7 @@ const TransactionDetails: React.FC<{ transaction: TransactionData }> = ({ transa
   return (
     <Card
       className="w-full shadow-md border border-gray-100 rounded-xl overflow-hidden"
-      headStyle={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}
+      styles={{ header: { backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" } }}
       title={
         <div className="flex justify-between items-center">
           <div className="flex items-center">
